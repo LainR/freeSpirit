@@ -58,9 +58,15 @@ function compile(Extencion,documento,docname){
         return code.stdout;
       break;
 
+    case 'jsx':
+        var dir = __dirname.toString().replace(/\\/g,'/')
+        var exec_doc_dir = dir+'/htdocs'+docname
+        var code = shell.exec('node '+exec_doc_dir.trim())
+        return code.stdout;
+      break;
     //Add more ....
     default:
-        return Buffer.from(documento).toString('base64') //download document
+        return documento //send download document
       break;
   }
 }
