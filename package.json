@@ -1,0 +1,32 @@
+{
+  "name": "freespirt",
+  "version": "0.0.1",
+  "description": "WebServer FreeSpirit",
+  "main": "open.js",
+  "scripts": {
+    "test": "node open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LainR/freeSpirit.git"
+  },
+  "keywords": [
+    "Apache",
+    "NodeJS",
+    "Web",
+    "webservice",
+    "webnode",
+    "php",
+    "apachenodejs"
+  ],
+  "author": "LainR",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/LainR/freeSpirit/issues"
+  },
+  "homepage": "https://github.com/LainR/freeSpirit#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "shelljs": "^0.8.3"
+  }
+}
