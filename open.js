@@ -16,6 +16,7 @@ const runner = require("child_process");
 (() => {
     app.get('*', async function(req, res) {
         var Directory = req.params[0].toString()
+        console.time(Directory)
         fs.readFile('./htdocs' + Directory, async(err, stats) => {
             console.log(Directory) //debug
             switch (Directory) {
@@ -45,6 +46,7 @@ async function open(Directory, stats) {
     Extencion = Extencion[Extencion.length - 1];
     //Compilar
     var response_complie = await compile(Extencion, stats, Directory);
+    console.timeEnd(Directory);
     return response_complie
 }
 
