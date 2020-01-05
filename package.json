@@ -26,7 +26,6 @@
   },
   "homepage": "https://github.com/LainR/freeSpirit#readme",
   "dependencies": {
-    "express": "^4.17.1",
-    "shelljs": "^0.8.3"
+    "express": "^4.17.1"
   }
 }
