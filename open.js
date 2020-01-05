@@ -49,7 +49,9 @@ function open(Directory,stats){
 //lenguajes de compilado Soportados
 function compile(Extencion,documento,docname){
   switch (Extencion) {
-
+    case 'html':
+        return documento.toString()
+    break;
     case 'php':
         var dir = __dirname.toString().replace(/\\/g,'/')
         var exec_doc_dir = dir+'/htdocs'+docname
