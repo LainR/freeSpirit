@@ -6,15 +6,15 @@ const fs = require('fs');
 
 class Compiler {
 
-    static compile(res, extencion, documento, docname, baseDir) {
+    static compile(res, extencion, docname, baseDir) {
         switch (extencion) {
             case 'php':
-                return Compiler.php(docname, baseDir);
+                return Compiler.php(path.join(baseDir, docname));
             case 'jsx':
-                return Compiler.jsx(docname, baseDir);
+                return Compiler.jsx(path.join(baseDir, docname));
             case 'scss':
                 res.setHeader('content-type', 'text/css');
-                return Compiler.sass(docname, baseDir);
+                return Compiler.sass(path.join(baseDir, docname));
             default:
                 return Compiler.staticFile(path.join(baseDir, docname));
         }
@@ -32,12 +32,10 @@ class Compiler {
         });
     }
 
-    static php(docname, baseDir) {
+    static php(filePath) {
         return new Promise((res, rej) => {
-            var dir = baseDir.toString().replace(/\\/g, '/');
-            var exec_doc_dir = path.join(dir, docname);
             var php_Path = 'C:/wamp64/bin/php/php7.1.22/php.exe';
-            runner.exec(php_Path + ' -f ' + exec_doc_dir, (err, phpResponse, stderr) => {
+            runner.exec(php_Path + ' -f ' + filePath, (err, phpResponse, stderr) => {
                 if (err)
                     rej(err);
                 else
@@ -46,11 +44,9 @@ class Compiler {
         });
     }
 
-    static jsx(docname, baseDir) {
+    static jsx(filePath) {
         return new Promise(() => {
-            var dir = baseDir.toString().replace(/\\/g, '/')
-            var exec_doc_dir = path.join(dir, docname);
-            runner.exec('node ' + exec_doc_dir.trim(), (err, nodeResponse, stderr) => {
+            runner.exec('node ' + filePath, (err, nodeResponse, stderr) => {
                 if (err)
                     rej(err);
                 else
@@ -59,12 +55,10 @@ class Compiler {
         });
     }
 
-    static sass(docname, baseDir) {
+    static sass(filePath) {
         return new Promise((res, rej) => {
-            var dir = baseDir.toString().replace(/\\/g, '/');
-            var exec_doc_dir = path.join(dir, docname);
             nodesass.render({
-                file: exec_doc_dir.trim()
+                file: filePath
             }, function(err, result) {
                 if (err)
                     rej(err);

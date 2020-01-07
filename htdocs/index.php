@@ -4,7 +4,6 @@
   <title>freeSpirit</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/jpg" href="img/free.jpg">
   <link rel="stylesheet" type="text/css" href="sass.scss">
 </head>
 <body>

@@ -47,7 +47,7 @@ class FreeSpiritServer {
             console.log(Directory)
             fs.stat(path.join(this.currentDir, Directory), (err, stats) => {
                 if (err) {
-
+                    this.sendInternalServerError(req, res);
                 } else if (stats.isDirectory()) {
                     this.sendDefaultFile(req, res);
                 } else if (stats.isFile()) {
@@ -66,24 +66,34 @@ class FreeSpiritServer {
     }
 
     async sendDefaultFile(req, res) {
-        fs.readFile(path.join(this.currentDir, Default_readFile), async(err, stats) => {
-            if (err) {
-                this.send404(req, res);
-            } else {
-                let response_complie = await this.open(res, Default_readFile, stats);
-                res.send(response_complie);
+        fs.stat(path.join(this.currentDir, Default_readFile), async(err, stats) => {
+            try {
+                if (err) {
+                    this.sendInternalServerError(req, res);
+                } else if (stats.isFile()) {
+                    let response_complie = await this.open(res, Default_readFile);
+                    res.send(response_complie);
+                } else {
+                    this.send404(req, res);
+                }
+            } catch (exc) {
+                this.sendInternalServerError(req, res);
             }
         });
     }
 
     async sendFile(req, res, Directory, stats) {
-        let response_complie = await this.open(res, Directory, stats);
-        res.send(response_complie);
+        try {
+            let response_complie = await this.open(res, Directory);
+            res.send(response_complie);
+        } catch (exc) {
+            this.sendInternalServerError(req, res);
+        }
     }
 
-    async open(res, filePath, stats) {
+    async open(res, filePath) {
         let extension = path.extname(filePath).substr(1);
-        let response_complie = await Compiler.compile(res, extension, stats, filePath, this.currentDir);
+        let response_complie = await Compiler.compile(res, extension, filePath, this.currentDir);
         return response_complie;
     }
 
