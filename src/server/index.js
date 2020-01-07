@@ -1,14 +1,43 @@
 const express = require('express');
 const Compiler = require('../compiler');
 const fs = require('fs');
-const default_archive = 'index.php';
+let port = 80;
+let Default_readFile = 'index.php';
+const os = require("os");
+const cluster = require("cluster");
+const configFile = require('../../freespirit.config.js');
 
 class FreeSpiritServer {
-    constructor(dirProject, port = 80) {
+    constructor() {
         this.app = express();
-        this.port = port;
-        this.currentDir = dirProject;
-        this.init();
+        this.port = configFile.port;
+        this.currentDir = configFile.htdocs;
+        const CPUS = Math.min(os.cpus().length, configFile.max_cpus);
+        if (CPUS > 1) {
+            switch (cluster.isMaster) {
+                case true: // Cpu Control 1 Exec
+                    console.clear();
+                    console.log('\x1b[31m%s\x1b[0m', `
+                    _____             _____     _     _
+                    |   __|___ ___ ___|   __|___|_|___| |_
+                    |   __|  _| -_| -_|__   | . | |  _|  _|
+                    |__|  |_| |___|___|_____|  _|_|_| |_|
+                                            |_|            `); //cyan
+                    console.log({ cpus: CPUS, port: this.port });
+                    for (let i = 0; i < CPUS; i++) { //Forge New process for Cpu
+                        cluster.fork();
+                    }
+                    cluster.on("exit", function(worker) {
+                        console.log("Worker", worker.id, " has exitted.")
+                    })
+                    break;
+                default:
+                    this.init();
+                    break;
+            }
+        } else {
+            this.init();
+        }
     }
 
     init() {
@@ -38,8 +67,8 @@ class FreeSpiritServer {
     }
 
     async sendDefaultFile(req, res) {
-        fs.readFile('./htdocs/' + default_archive, async(err, stats) => {
-            var response_complie = await this.open(res, '/' + default_archive, stats);
+        fs.readFile('./htdocs/' + Default_readFile, async(err, stats) => {
+            var response_complie = await this.open(res, '/' + Default_readFile, stats);
             res.send(response_complie);
         });
     }
