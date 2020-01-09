@@ -16,7 +16,6 @@ const DEFAULT_CONFIG = {
 class FreeSpiritServer {
     constructor() {
         this.config = Object.assign({}, DEFAULT_CONFIG, configFile);
-        this.app = express();
         const CPUS = Math.min(os.cpus().length, configFile.max_cpus);
         if (CPUS > 1) {
             switch (cluster.isMaster) {
@@ -46,6 +45,7 @@ class FreeSpiritServer {
     }
 
     init() {
+        this.app = express();
         this.app.get('*', (req, res) => {
             let pathReq = req.params[0].toString();
             console.log(pathReq)
@@ -60,7 +60,6 @@ class FreeSpiritServer {
                     console.log('unkwon type');
                 }
             });
-
         });
         this.app.listen(this.config.port, () => console.log(`Listen ${this.config.port}`));
     }
@@ -73,6 +72,7 @@ class FreeSpiritServer {
         fs.stat(path.join(this.config.htdocs, this.config.default_readFile), async(err, stats) => {
             try {
                 if (err) {
+                    console.error(err);
                     this.sendInternalServerError(req, res);
                 } else if (stats.isFile()) {
                     let response_complie = await this.open(res, this.config.default_readFile);
@@ -81,6 +81,7 @@ class FreeSpiritServer {
                     this.send404(req, res);
                 }
             } catch (exc) {
+                console.error(exc);
                 this.sendInternalServerError(req, res);
             }
         });
@@ -91,6 +92,7 @@ class FreeSpiritServer {
             let response_complie = await this.open(res, Directory);
             res.send(response_complie);
         } catch (exc) {
+            console.error(exc);
             this.sendInternalServerError(req, res);
         }
     }
