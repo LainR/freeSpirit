@@ -1,0 +1,11 @@
+<?php
+
+/*
+
+$_SERVER['PHP_SELF'] => file path
+
+
+
+*/
+
+?>

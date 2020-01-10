@@ -79,9 +79,8 @@ class FreeSpiritServer {
             try {
                 if (err) {
                     this.send404(req, res);
-                    this.sendInternalServerError(req, res);
                 } else if (stats.isFile()) {
-                    let response_complie = await this.open(res, this.config.default_readFile);
+                    let response_complie = await this.open(res, path.join(this.config.htdocs, pathDir ,this.config.default_readFile));
                     res.send(response_complie);
                 } else {
                     this.send404(req, res);
@@ -95,7 +94,7 @@ class FreeSpiritServer {
 
     async sendFile(req, res, filePath) {
         try {
-            let response_complie = await this.open(res, filePath);
+            let response_complie = await this.open(res, path.join(this.config.htdocs, filePath));
             res.send(response_complie);
         } catch (exc) {
             console.error(exc);
@@ -105,7 +104,7 @@ class FreeSpiritServer {
 
     async open(res, filePath) {
         let extension = path.extname(filePath).substr(1);
-        let response_complie = await Compiler.compile(res, extension, filePath, this.config.htdocs);
+        let response_complie = await Compiler.compile(res, extension, filePath);
         return response_complie;
     }
 

@@ -9,19 +9,19 @@ class Compiler {
 
     static php_Path = '';
 
-    static compile(res, extencion, docname, baseDir) {
+    static compile(res, extencion, filePath) {
         switch (extencion) {
             case 'php':
-                return Compiler.php(path.join(baseDir, docname));
+                return Compiler.php(filePath);
             case 'jsx':
-                return Compiler.jsx(path.join(baseDir, docname));
+                return Compiler.jsx(filePath);
             case 'scss':
                 res.setHeader('content-type', 'text/css');
-                return Compiler.sass(path.join(baseDir, docname));
+                return Compiler.sass(filePath);
             case 'md':
-                return Compiler.md(path.join(baseDir, docname));
+                return Compiler.md(filePath);
             default:
-                return Compiler.staticFile(path.join(baseDir, docname));
+                return Compiler.staticFile(filePath);
         }
     }
 
