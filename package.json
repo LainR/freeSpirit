@@ -30,6 +30,7 @@
     "dependencies": {
         "express": "^4.17.1",
         "forever": "^2.0.0",
+        "marked": "^0.8.0",
         "node-sass": "^4.13.0",
         "shelljs": "^0.8.3"
     },

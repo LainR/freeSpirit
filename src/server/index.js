@@ -57,9 +57,9 @@ class FreeSpiritServer {
             console.log(pathReq)
             fs.stat(path.join(this.config.htdocs, pathReq), (err, stats) => {
                 if (err) {
-                    this.sendInternalServerError(req, res);
+                    this.send404(req, res);
                 } else if (stats.isDirectory()) {
-                    this.sendDefaultFile(req, res);
+                    this.sendDefaultFile(req, res, pathReq);
                 } else if (stats.isFile()) {
                     this.sendFile(req, res, pathReq);
                 } else {
@@ -74,11 +74,11 @@ class FreeSpiritServer {
         res.status(404).send('HTTP 404 Not Found');
     }
 
-    async sendDefaultFile(req, res) {
-        fs.stat(path.join(this.config.htdocs, this.config.default_readFile), async(err, stats) => {
+    async sendDefaultFile(req, res, pathDir) {
+        fs.stat(path.join(this.config.htdocs, pathDir ,this.config.default_readFile), async(err, stats) => {
             try {
                 if (err) {
-                    console.error(err);
+                    this.send404(req, res);
                     this.sendInternalServerError(req, res);
                 } else if (stats.isFile()) {
                     let response_complie = await this.open(res, this.config.default_readFile);
@@ -93,9 +93,9 @@ class FreeSpiritServer {
         });
     }
 
-    async sendFile(req, res, Directory) {
+    async sendFile(req, res, filePath) {
         try {
-            let response_complie = await this.open(res, Directory);
+            let response_complie = await this.open(res, filePath);
             res.send(response_complie);
         } catch (exc) {
             console.error(exc);

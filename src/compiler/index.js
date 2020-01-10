@@ -2,6 +2,7 @@ const runner = require("child_process");
 const nodesass = require('node-sass');
 const path = require('path');
 const fs = require('fs');
+const marked = require('marked');
 
 
 class Compiler {
@@ -17,6 +18,8 @@ class Compiler {
             case 'scss':
                 res.setHeader('content-type', 'text/css');
                 return Compiler.sass(path.join(baseDir, docname));
+            case 'md':
+                return Compiler.md(path.join(baseDir, docname));
             default:
                 return Compiler.staticFile(path.join(baseDir, docname));
         }
@@ -47,7 +50,7 @@ class Compiler {
     }
 
     static jsx(filePath) {
-        return new Promise(() => {
+        return new Promise((res, rej) => {
             runner.exec('node ' + filePath, (err, nodeResponse, stderr) => {
                 if (err)
                     rej(err);
@@ -66,6 +69,22 @@ class Compiler {
                     rej(err);
                 else
                     res(result.css.toString());
+            });
+        });
+    }
+
+    static md(filePath) {
+        return new Promise((res, rej) => {
+            fs.readFile(filePath, "utf8", (err, data) => {
+                if (err)
+                    rej(err);
+                else
+                    marked(data, (errM, result) => {
+                        if (err)
+                            rej(errM);
+                        else
+                            res(result);
+                    });
             });
         });
     }
