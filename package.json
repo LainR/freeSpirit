@@ -5,7 +5,8 @@
     "main": "open.js",
     "scripts": {
         "test": "node open",
-        "dev": "npx nodemon open.js"
+        "dev": "npx nodemon open.js",
+        "prod": "npx forever start open.js"
     },
     "repository": {
         "type": "git",
@@ -28,6 +29,7 @@
     "homepage": "https://github.com/LainR/freeSpirit#readme",
     "dependencies": {
         "express": "^4.17.1",
+        "forever": "^2.0.0",
         "node-sass": "^4.13.0",
         "shelljs": "^0.8.3"
     },

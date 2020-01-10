@@ -8,7 +8,7 @@ const path = require('path');
 const DEFAULT_CONFIG = {
     "port": 80,
     "default_readFile": "index.php",
-    "php_Path": "C:/wamp64/bin/php/php7.2.10/php.exe",
+    "php_Path": "php",
     "htdocs": path.join(__dirname, '/htdocs'),
     "max_cpus": 2
 };
@@ -16,13 +16,14 @@ const DEFAULT_CONFIG = {
 class FreeSpiritServer {
     constructor() {
         this.config = Object.assign({}, DEFAULT_CONFIG, configFile);
+        Compiler.php_Path = this.config.php_Path;
         const CPUS = Math.min(os.cpus().length, configFile.max_cpus);
         if (CPUS > 1) {
             switch (cluster.isMaster) {
                 case true: // Cpu Control 1 Exec
                     console.clear();
                     console.log('\x1b[31m%s\x1b[0m', `
-                    _____             _____     _     _
+                     _____             _____     _     _
                     |   __|___ ___ ___|   __|___|_|___| |_
                     |   __|  _| -_| -_|__   | . | |  _|  _|
                     |__|  |_| |___|___|_____|  _|_|_| |_|
@@ -31,9 +32,14 @@ class FreeSpiritServer {
                     for (let i = 0; i < CPUS; i++) { //Forge New process for Cpu
                         cluster.fork();
                     }
+                    process.on("SIGHUP", function () {//for nodemon
+                        for (const worker of Object.values(cluster.workers)) {
+                            worker.process.kill("SIGTERM");
+                        }
+                    });
                     cluster.on("exit", function(worker) {
                         console.log("Worker", worker.id, " has exitted.")
-                    })
+                    });
                     break;
                 default:
                     this.init();

@@ -6,6 +6,8 @@ const fs = require('fs');
 
 class Compiler {
 
+    static php_Path = '';
+
     static compile(res, extencion, docname, baseDir) {
         switch (extencion) {
             case 'php':
@@ -34,7 +36,7 @@ class Compiler {
 
     static php(filePath) {
         return new Promise((res, rej) => {
-            var php_Path = 'C:/wamp64/bin/php/php7.1.22/php.exe';
+            var php_Path = Compiler.php_Path;
             runner.exec(php_Path + ' -f ' + filePath, (err, phpResponse, stderr) => {
                 if (err)
                     rej(err);
