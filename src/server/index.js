@@ -5,6 +5,12 @@ const os = require("os");
 const cluster = require("cluster");
 const configFile = require('../../freespirit.config.js');
 const path = require('path');
+const bodyParser = require('body-parser');
+const compression = require('compression');
+const http = require('http');
+const https = require('https');
+http.globalAgent.maxSockets = Infinity;
+https.globalAgent.maxSockets = Infinity;
 const DEFAULT_CONFIG = {
     "port": 80,
     "default_readFile": "index.php",
@@ -52,9 +58,13 @@ class FreeSpiritServer {
 
     init() {
         this.app = express();
+        this.app.use(bodyParser.urlencoded({ extended: false }))
+        this.app.use(bodyParser.json());
+        this.app.use(compression());
         this.app.get('*', (req, res) => {
             let pathReq = req.params[0].toString();
-            console.log(pathReq)
+            console.log(pathReq);
+            //res.setHeader('Cache-Control', 'public, max-age=86400'); cahe example
             fs.stat(path.join(this.config.htdocs, pathReq), (err, stats) => {
                 if (err) {
                     this.send404(req, res);
@@ -63,7 +73,7 @@ class FreeSpiritServer {
                 } else if (stats.isFile()) {
                     this.sendFile(req, res, pathReq);
                 } else {
-                    console.log('unkwon type');
+                    this.send404(req, res);
                 }
             });
         });
@@ -87,7 +97,7 @@ class FreeSpiritServer {
                 }
             } catch (exc) {
                 console.error(exc);
-                this.sendInternalServerError(req, res);
+                this.sendInternalServerError(req, res, exc);
             }
         });
     }
@@ -98,7 +108,7 @@ class FreeSpiritServer {
             res.send(response_complie);
         } catch (exc) {
             console.error(exc);
-            this.sendInternalServerError(req, res);
+            this.sendInternalServerError(req, res, exc);
         }
     }
 
@@ -108,8 +118,8 @@ class FreeSpiritServer {
         return response_complie;
     }
 
-    sendInternalServerError(req, res) {
-        res.status(500).send('Internal server error');
+    sendInternalServerError(req, res, err) {
+        res.status(500).send('Internal server error ' + JSON.stringify(err));
     }
 }
 
